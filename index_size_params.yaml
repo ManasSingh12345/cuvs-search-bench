@@ -1,0 +1,17 @@
+# HNSW / CAGRA→HNSW parameters for index_size_analysis.ipynb
+
+faiss:
+  M: 16
+  ef_construction: 256
+  ef_search: 80
+
+cagra:
+  build_algo: ivf_pq      # kNN graph builder (ivf_pq | nn_descent)
+  graph_degree: 32
+  intermediate_graph_degree: 64
+  itopk_size: 64          # CAGRA GPU search analog of ef
+  persistent: true        # Required by C++ client for high QPS; ignored elsewhere.
+
+ivf_pq:
+  n_lists: 1024           # number of inverted-list clusters
+  n_probes: 32            # clusters to probe at search time

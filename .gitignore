@@ -1,0 +1,15 @@
+# compiled binary (rebuilt with build_cuvs_search_client.sh)
+cuvs_search_client
+
+# benchmark outputs
+*.csv
+
+# data (point CUVS_DATASET_PATH at it instead)
+datasets/
+*.fbin
+*.npy
+
+# python / jupyter
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
