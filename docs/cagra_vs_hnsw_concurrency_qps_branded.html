@@ -1,142 +1,120 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CAGRA vs FAISS HNSW — search concurrency vs effective QPS</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <style>
-    :root {
-      --bg: #0d1117;
-      --panel: #161b22;
-      --text: #e6edf3;
-      --muted: #8b949e;
-      --cagra: #76b900;
-      --faiss: #0071c5;
-      --border: #30363d;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "Segoe UI", system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      padding: 2rem clamp(1rem, 4vw, 3rem);
-    }
-    .wrap { max-width: 960px; margin: 0 auto; }
-    h1 {
-      font-size: clamp(1.25rem, 3vw, 1.75rem);
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      margin: 0 0 0.35rem;
-    }
-    .subtitle {
-      color: var(--muted);
-      font-size: 0.95rem;
-      margin-bottom: 1.5rem;
-      line-height: 1.5;
-    }
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem 1.25rem 0.5rem;
-    }
-    canvas { max-height: 420px; }
-    footer {
-      margin-top: 1.25rem;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <h1>CAGRA vs FAISS HNSW — effective QPS vs search concurrency</h1>
-    <p class="subtitle">
-      1M vectors × 1024 dims, k=10, batch_size=1. CAGRA: cuVS <code>nn_descent</code> build + <code>cuvs_search_client</code>.
-      FAISS: HNSWFlat, concurrent Python threads (OMP=1 per search). Data source: <code>results_cagra_faiss_hnsw.csv</code> in repo root.
-    </p>
-    <div class="panel">
-      <canvas id="qps" height="360"></canvas>
-    </div>
-    <footer>
-      Replace this file with your own export if needed — keep the same path so README / links stay valid.
-    </footer>
+
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;">Concurrency vs throughput chart comparing CAGRA GPU search and FAISS HNSW CPU search, showing QPS at batch size 1 across concurrency levels 1 to 128</h2>
+
+<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+  <div style="background:var(--color-background-secondary);border-radius:8px;padding:10px 16px;flex:1;min-width:120px;">
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:2px;">Peak GPU QPS</div>
+    <div style="font-size:22px;font-weight:500;color:var(--color-text-primary);">32,229</div>
+    <div style="font-size:11px;color:var(--color-text-tertiary);">at concurrency 32</div>
   </div>
-  <script>
-    const c = [1, 2, 4, 8, 16, 32, 64, 128];
-    const cagraQps = [1781.8007, 3660.8179, 7483.3495, 14709.6247, 25876.6357, 32228.6429, 30793.2969, 26800.8137];
-    const faissQps = [1520.9117, 2721.5575, 5046.5777, 7769.8906, 10004.9909, 8460.9797, 7889.6242, 7611.9435];
-    Chart.defaults.color = "#8b949e";
-    Chart.defaults.borderColor = "#30363d";
-    new Chart(document.getElementById("qps"), {
-      type: "line",
-      data: {
-        labels: c.map((x) => "c = " + x),
-        datasets: [
-          {
-            label: "CAGRA (effective QPS)",
-            data: cagraQps,
-            borderColor: "#76b900",
-            backgroundColor: "rgba(118, 185, 0, 0.12)",
-            fill: true,
-            tension: 0.2,
-            pointRadius: 5,
-            pointHoverRadius: 7,
-          },
-          {
-            label: "FAISS HNSW (effective QPS)",
-            data: faissQps,
-            borderColor: "#0071c5",
-            backgroundColor: "rgba(0, 113, 197, 0.1)",
-            fill: true,
-            tension: 0.2,
-            pointRadius: 5,
-            pointHoverRadius: 7,
-          },
-        ],
+  <div style="background:var(--color-background-secondary);border-radius:8px;padding:10px 16px;flex:1;min-width:120px;">
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:2px;">Peak CPU QPS</div>
+    <div style="font-size:22px;font-weight:500;color:var(--color-text-primary);">10,005</div>
+    <div style="font-size:11px;color:var(--color-text-tertiary);">at concurrency 16</div>
+  </div>
+  <div style="background:var(--color-background-secondary);border-radius:8px;padding:10px 16px;flex:1;min-width:120px;">
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:2px;">Peak speedup</div>
+    <div style="font-size:22px;font-weight:500;color:var(--color-text-primary);">3.2×</div>
+    <div style="font-size:11px;color:var(--color-text-tertiary);">GPU vs CPU at peak</div>
+  </div>
+  <div style="background:var(--color-background-secondary);border-radius:8px;padding:10px 16px;flex:1;min-width:120px;">
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:2px;">Recall (approx)</div>
+    <div style="font-size:22px;font-weight:500;color:var(--color-text-primary);">93%</div>
+    <div style="font-size:11px;color:var(--color-text-tertiary);">both indices, k=10</div>
+  </div>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:10px;font-size:12px;color:var(--color-text-secondary);">
+  <span style="display:flex;align-items:center;gap:5px;">
+    <span style="width:24px;height:3px;background:#76b900;display:inline-block;border-radius:2px;"></span>
+    <span style="width:8px;height:8px;background:#76b900;border-radius:50%;display:inline-block;"></span>
+    CAGRA — NVIDIA L4 GPU (24 GB)
+  </span>
+  <span style="display:flex;align-items:center;gap:5px;">
+    <span style="width:24px;height:2px;background:#0071c5;display:inline-block;border-radius:2px;border-top:2px dashed #0071c5;"></span>
+    <span style="width:8px;height:8px;background:#0071c5;border-radius:2px;display:inline-block;"></span>
+    FAISS HNSW — AMD EPYC 7R13 (64 vCPU)
+  </span>
+  <span style="font-size:11px;color:var(--color-text-tertiary);margin-left:4px;">1M vectors · dim=1024 · k=10 · bs=1 · nn_descent build</span>
+</div>
+
+<div style="position:relative;width:100%;height:320px;">
+  <canvas id="qpsChart" role="img" aria-label="Line chart comparing CAGRA GPU and FAISS HNSW CPU QPS across concurrency levels 1,2,4,8,16,32,64,128. CAGRA peaks at 32,229 QPS at concurrency 32. HNSW peaks at 10,005 QPS at concurrency 16. Both decline at higher concurrency.">
+    CAGRA QPS: 1782, 3661, 7483, 14710, 25877, 32229, 30793, 26801. HNSW QPS: 1521, 2722, 5047, 7770, 10005, 8461, 7890, 7612.
+  </canvas>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const labels = ['1','2','4','8','16','32','64','128'];
+const cagraQps = [1782, 3661, 7483, 14710, 25877, 32229, 30793, 26801];
+const hnswQps  = [1521, 2722, 5047, 7770, 10005, 8461, 7890, 7612];
+
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const textColor = isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)';
+const gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+
+new Chart(document.getElementById('qpsChart'), {
+  type: 'line',
+  data: {
+    labels,
+    datasets: [
+      {
+        label: 'CAGRA (NVIDIA L4 GPU)',
+        data: cagraQps,
+        borderColor: '#76b900',
+        backgroundColor: 'rgba(118,185,0,0.08)',
+        pointBackgroundColor: '#76b900',
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        borderWidth: 2.5,
+        fill: true,
+        tension: 0.35,
+        pointStyle: 'circle'
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            labels: { color: "#e6edf3", font: { size: 13 } },
-          },
-          tooltip: {
-            callbacks: {
-              label: (ctx) =>
-                ctx.dataset.label + ": " + Math.round(ctx.parsed.y).toLocaleString() + " QPS",
-            },
-          },
-        },
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: "Search concurrency (in-flight searches)",
-              color: "#8b949e",
-            },
-            ticks: { color: "#8b949e" },
-            grid: { color: "#21262d" },
-          },
-          y: {
-            title: {
-              display: true,
-              text: "Effective QPS (nq / search_wall_s)",
-              color: "#8b949e",
-            },
-            ticks: {
-              color: "#8b949e",
-              callback: (v) => (v >= 1e3 ? (v / 1e3).toFixed(0) + "k" : v),
-            },
-            grid: { color: "#21262d" },
-          },
-        },
+      {
+        label: 'FAISS HNSW (AMD EPYC 64 vCPU)',
+        data: hnswQps,
+        borderColor: '#0071c5',
+        backgroundColor: 'rgba(0,113,197,0.06)',
+        pointBackgroundColor: '#0071c5',
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        borderWidth: 2,
+        borderDash: [6,3],
+        fill: true,
+        tension: 0.35,
+        pointStyle: 'rect'
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString() + ' QPS'
+        }
+      }
+    },
+    scales: {
+      x: {
+        title: { display: true, text: 'Concurrency (threads)', color: textColor, font: { size: 12 } },
+        ticks: { color: textColor, font: { size: 12 } },
+        grid: { color: gridColor },
+        border: { display: false }
       },
-    });
-  </script>
-</body>
-</html>
+      y: {
+        title: { display: true, text: 'Throughput (QPS)', color: textColor, font: { size: 12 } },
+        ticks: { color: textColor, font: { size: 12 }, callback: v => (v/1000).toFixed(0) + 'K' },
+        grid: { color: gridColor },
+        border: { display: false },
+        min: 0
+      }
+    }
+  }
+});
+</script>
