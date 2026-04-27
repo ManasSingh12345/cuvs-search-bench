@@ -15,15 +15,15 @@ The notebook builds the index in Python, then runs **all** cuVS searches (every 
 | `docs/cagra_vs_hnsw_concurrency_qps_branded.html` | Interactive QPS chart (Chart.js; served on Pages) |
 | `docs/index.html` | Pages site root (redirects to chart) |
 | `docs/results-chart.svg` | Static SVG copy of the same chart (optional) |
-| `.github/workflows/deploy-pages.yml` | Deploys `docs/` to GitHub Pages on every push to `main` |
+| [`contrib/deploy-pages.yml`](contrib/deploy-pages.yml) | GitHub Actions workflow source — copy to `.github/workflows/deploy-pages.yml` (see Results) |
 
 ## Results
 
 **[Interactive chart (GitHub Pages)](https://manassingh12345.github.io/cuvs-search-bench/cagra_vs_hnsw_concurrency_qps_branded.html)** — CAGRA vs FAISS HNSW effective QPS vs concurrency (Chart.js).
 
-Published by [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml) on each push to `main`.
+**Deploy (GitHub Actions):** copy [`contrib/deploy-pages.yml`](contrib/deploy-pages.yml) to `.github/workflows/deploy-pages.yml`, commit, and push (some automation tokens cannot create workflow files; use your laptop or GitHub’s web editor if needed). On each push to `main`, the workflow publishes the `docs/` folder.
 
-**One-time (repo owner):** **Settings** → **Pages** → **Build and deployment** → set **Source** to **GitHub Actions**, then save. After the next workflow run, the link above works.
+**One-time (repo owner):** **Settings** → **Pages** → **Build and deployment** → set **Source** to **GitHub Actions**, then save. Approve the **github-pages** environment the first time Actions prompts. After a green **Deploy GitHub Pages** run, the link above works.
 
 ## Setup
 
