@@ -19,7 +19,7 @@ The notebook builds the index in Python, then runs **all** cuVS searches (every 
 
 ## Results
 
-**[Interactive chart (GitHub Pages)](https://manassingh12345.github.io/cuvs-search-bench/cagra_vs_hnsw_concurrency_qps_branded.html)** — CAGRA vs FAISS HNSW effective QPS vs concurrency (Chart.js).
+**[Interactive Plot](https://manassingh12345.github.io/cuvs-search-bench/cagra_vs_hnsw_concurrency_qps_branded.html)** — CAGRA vs FAISS HNSW effective QPS vs concurrency (Chart.js).
 
 ## Setup
 
