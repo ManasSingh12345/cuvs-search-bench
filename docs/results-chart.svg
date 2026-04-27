@@ -1,46 +1,63 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 360" role="img" aria-labelledby="t d">
-  <title id="t">CAGRA vs FAISS HNSW effective QPS vs concurrency</title>
-  <desc id="d">1M vectors dim 1024 k 10 batch 1. CAGRA peaks near 32k QPS at concurrency 32; FAISS peaks near 10k at 16.</desc>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 360">
+  <title>CAGRA vs FAISS HNSW effective QPS vs concurrency</title>
+  <desc>1M vectors, dim 1024, k=10, batch 1, nn_descent. CAGRA peaks near 32k QPS at concurrency 32; FAISS peaks near 10k at 16.</desc>
   <rect width="820" height="360" fill="#0d1117"/>
-  <text x="410" y="28" fill="#e6edf3" font-size="16" font-family="system-ui,sans-serif" font-weight="600" text-anchor="middle">CAGRA vs FAISS HNSW  effective QPS</text>
-  <text x="410" y="46" fill="#8b949e" font-size="12" font-family="system-ui,sans-serif" text-anchor="middle">1M ù 1024 ù k=10 ù bs=1 ù nn_descent</text>
-  <!-- grid horizontal -->
+  <text x="410" y="28" fill="#e6edf3" font-size="16" font-family="Arial,sans-serif" font-weight="600" text-anchor="middle">CAGRA vs FAISS HNSW - effective QPS</text>
+  <text x="410" y="46" fill="#8b949e" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">1M x 1024, k=10, bs=1, nn_descent</text>
   <g stroke="#30363d" stroke-width="1">
-    <line x1="72" y1="99" x2="792" y2="99"/><line x1="72" y1="156" x2="792" y2="156"/>
-    <line x1="72" y1="213" x2="792" y2="213"/><line x1="72" y1="270" x2="792" y2="270"/>
+    <line x1="72" y1="99" x2="792" y2="99"/>
+    <line x1="72" y1="156" x2="792" y2="156"/>
+    <line x1="72" y1="213" x2="792" y2="213"/>
+    <line x1="72" y1="270" x2="792" y2="270"/>
     <line x1="72" y1="327" x2="792" y2="327"/>
   </g>
-  <!-- axes -->
   <line x1="72" y1="327" x2="792" y2="327" stroke="#484f58" stroke-width="1.5"/>
   <line x1="72" y1="88" x2="72" y2="327" stroke="#484f58" stroke-width="1.5"/>
-  <!-- Y ticks -->
-  <g fill="#8b949e" font-size="11" font-family="system-ui,sans-serif" text-anchor="end">
-    <text x="64" y="103">35k</text><text x="64" y="160">25k</text><text x="64" y="217">15k</text>
-    <text x="64" y="274">5k</text><text x="64" y="330">0</text>
+  <g fill="#8b949e" font-size="11" font-family="Arial,sans-serif" text-anchor="end">
+    <text x="64" y="103">35k</text>
+    <text x="64" y="160">25k</text>
+    <text x="64" y="217">15k</text>
+    <text x="64" y="274">5k</text>
+    <text x="64" y="330">0</text>
   </g>
-  <text x="28" y="210" fill="#8b949e" font-size="12" font-family="system-ui,sans-serif" transform="rotate(-90 28 210)">QPS</text>
-  <!-- X labels -->
-  <g fill="#8b949e" font-size="11" font-family="system-ui,sans-serif" text-anchor="middle">
-    <text x="72" y="348">1</text><text x="174.9" y="348">2</text><text x="277.7" y="348">4</text><text x="380.6" y="348">8</text>
-    <text x="483.4" y="348">16</text><text x="586.3" y="348">32</text><text x="689.1" y="348">64</text><text x="792" y="348">128</text>
+  <text x="28" y="210" fill="#8b949e" font-size="12" font-family="Arial,sans-serif" transform="rotate(-90 28 210)">QPS</text>
+  <g fill="#8b949e" font-size="11" font-family="Arial,sans-serif" text-anchor="middle">
+    <text x="72" y="348">1</text>
+    <text x="174.9" y="348">2</text>
+    <text x="277.7" y="348">4</text>
+    <text x="380.6" y="348">8</text>
+    <text x="483.4" y="348">16</text>
+    <text x="586.3" y="348">32</text>
+    <text x="689.1" y="348">64</text>
+    <text x="792" y="348">128</text>
   </g>
-  <text x="432" y="352" fill="#8b949e" font-size="12" font-family="system-ui,sans-serif" text-anchor="middle">Concurrency</text>
-  <!-- lines -->
+  <text x="432" y="352" fill="#8b949e" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">Concurrency</text>
   <polyline fill="none" stroke="#76b900" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"
     points="72,275.9 174.9,263.2 277.7,237.3 380.6,188.3 483.4,112.6 586.3,69.6 689.1,79.3 792,106.3"/>
   <polyline fill="none" stroke="#0071c5" stroke-width="2" stroke-dasharray="7 4" stroke-linejoin="round" stroke-linecap="round"
     points="72,277.7 174.9,269.6 277.7,253.8 380.6,235.3 483.4,220.2 586.3,230.7 689.1,234.5 792,236.4"/>
-  <!-- points -->
   <g fill="#76b900">
-    <circle cx="72" cy="275.9" r="4"/><circle cx="174.9" cy="263.2" r="4"/><circle cx="277.7" cy="237.3" r="4"/><circle cx="380.6" cy="188.3" r="4"/>
-    <circle cx="483.4" cy="112.6" r="4"/><circle cx="586.3" cy="69.6" r="4"/><circle cx="689.1" cy="79.3" r="4"/><circle cx="792" cy="106.3" r="4"/>
+    <circle cx="72" cy="275.9" r="4"/>
+    <circle cx="174.9" cy="263.2" r="4"/>
+    <circle cx="277.7" cy="237.3" r="4"/>
+    <circle cx="380.6" cy="188.3" r="4"/>
+    <circle cx="483.4" cy="112.6" r="4"/>
+    <circle cx="586.3" cy="69.6" r="4"/>
+    <circle cx="689.1" cy="79.3" r="4"/>
+    <circle cx="792" cy="106.3" r="4"/>
   </g>
   <g fill="#0071c5">
-    <circle cx="72" cy="277.7" r="3.5"/><circle cx="174.9" cy="269.6" r="3.5"/><circle cx="277.7" cy="253.8" r="3.5"/><circle cx="380.6" cy="235.3" r="3.5"/>
-    <circle cx="483.4" cy="220.2" r="3.5"/><circle cx="586.3" cy="230.7" r="3.5"/><circle cx="689.1" cy="234.5" r="3.5"/><circle cx="792" cy="236.4" r="3.5"/>
+    <circle cx="72" cy="277.7" r="3.5"/>
+    <circle cx="174.9" cy="269.6" r="3.5"/>
+    <circle cx="277.7" cy="253.8" r="3.5"/>
+    <circle cx="380.6" cy="235.3" r="3.5"/>
+    <circle cx="483.4" cy="220.2" r="3.5"/>
+    <circle cx="586.3" cy="230.7" r="3.5"/>
+    <circle cx="689.1" cy="234.5" r="3.5"/>
+    <circle cx="792" cy="236.4" r="3.5"/>
   </g>
-  <!-- legend -->
-  <g font-size="12" font-family="system-ui,sans-serif">
+  <g font-size="12" font-family="Arial,sans-serif">
     <line x1="520" y1="72" x2="548" y2="72" stroke="#76b900" stroke-width="3"/>
     <text x="556" y="76" fill="#c9d1d9">CAGRA (GPU)</text>
     <line x1="660" y1="72" x2="688" y2="72" stroke="#0071c5" stroke-width="2" stroke-dasharray="6 3"/>
