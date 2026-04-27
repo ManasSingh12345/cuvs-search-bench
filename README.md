@@ -16,9 +16,13 @@ The notebook builds the index in Python, then runs **all** cuVS searches (every 
 
 ## Diagram (HTML)
 
-Open [`docs/cagra_vs_hnsw_concurrency_qps_branded.html`](docs/cagra_vs_hnsw_concurrency_qps_branded.html) in a browser (clone the repo or use **Raw** → save as file → open). GitHub’s file viewer does not execute inline HTML; for in-repo rendering, enable [**GitHub Pages**](https://docs.github.com/en/pages) with the `/docs` folder and open the published URL to the same path.
+GitHub’s **code browser does not render HTML** (it shows the source only). Ways to view the chart:
 
-To use your own branded export from another machine, copy it over this path:
+- **Preview in browser (no clone):** [HTMLPreview — `cagra_vs_hnsw_concurrency_qps_branded.html`](https://htmlpreview.github.io/?https://raw.githubusercontent.com/ManasSingh12345/cuvs-search-bench/main/docs/cagra_vs_hnsw_concurrency_qps_branded.html) (third-party; fine for static assets).
+- **Local:** clone and open [`docs/cagra_vs_hnsw_concurrency_qps_branded.html`](docs/cagra_vs_hnsw_concurrency_qps_branded.html), or Raw → Save As → open the file.
+- **First-class on `*.github.io`:** enable [**GitHub Pages**](https://docs.github.com/en/pages) with the **`/docs`** folder on `main`, then open `https://<user>.github.io/cuvs-search-bench/cagra_vs_hnsw_concurrency_qps_branded.html`.
+
+To replace the diagram from another machine:
 
 `scp /Users/manass/Downloads/cagra_vs_hnsw_concurrency_qps_branded.html user@host:/path/to/cuvs-search-bench/docs/cagra_vs_hnsw_concurrency_qps_branded.html`
 
