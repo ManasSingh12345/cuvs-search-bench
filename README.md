@@ -12,36 +12,13 @@ The notebook builds the index in Python, then runs **all** cuVS searches (every 
 | `index_size_params.yaml` | Algorithm parameters (CAGRA + IVF-PQ + FAISS) |
 | `cuvs_search_client.cpp` | Master C++ client (CAGRA / IVF-PQ via `--algo`) |
 | `build_cuvs_search_client.sh` | Compiles `cuvs_search_client` from `.cpp` |
-| `docs/cagra_vs_hnsw_concurrency_qps_branded.html` | Standalone chart: CAGRA vs FAISS QPS vs concurrency (served on GitHub Pages) |
-| `docs/index.html` | Pages site root → redirects to the chart |
+| `docs/results-chart.svg` | Same QPS chart as static SVG (shown under Results) |
+| `docs/cagra_vs_hnsw_concurrency_qps_branded.html` | Interactive Chart.js version |
+| `docs/index.html` | Optional GitHub Pages root redirect |
 
-## Diagram (HTML)
+## Results
 
-GitHub’s **code browser does not render HTML** (it shows the source only).
-
-### GitHub Pages (recommended — Chart.js works)
-
-**One-time setup** (repo owner):
-
-1. Open **Settings → Pages** for this repository.
-2. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
-3. Choose branch **`main`** and folder **`/docs`**, then **Save**.
-
-GitHub will publish the contents of **`docs/`** on the next push (and on every update to `main`). No build step is required for static HTML.
-
-After Pages shows a green check / “Your site is live”, open:
-
-- **https://manassingh12345.github.io/cuvs-search-bench/** (redirects to the chart)
-- **https://manassingh12345.github.io/cuvs-search-bench/cagra_vs_hnsw_concurrency_qps_branded.html**
-
-### Other ways to view
-
-- **Preview (no clone):** [HTMLPreview](https://htmlpreview.github.io/?https://raw.githubusercontent.com/ManasSingh12345/cuvs-search-bench/main/docs/cagra_vs_hnsw_concurrency_qps_branded.html) (third-party; raw GitHub often disables scripts).
-- **Local:** clone and open [`docs/cagra_vs_hnsw_concurrency_qps_branded.html`](docs/cagra_vs_hnsw_concurrency_qps_branded.html).
-
-To replace the diagram from another machine:
-
-`scp /Users/manass/Downloads/cagra_vs_hnsw_concurrency_qps_branded.html user@host:/path/to/cuvs-search-bench/docs/cagra_vs_hnsw_concurrency_qps_branded.html`
+![CAGRA vs FAISS HNSW — effective QPS vs concurrency](docs/results-chart.svg)
 
 ## Setup
 
