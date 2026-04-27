@@ -21,10 +21,6 @@ The notebook builds the index in Python, then runs **all** cuVS searches (every 
 
 **[Interactive chart (GitHub Pages)](https://manassingh12345.github.io/cuvs-search-bench/cagra_vs_hnsw_concurrency_qps_branded.html)** — CAGRA vs FAISS HNSW effective QPS vs concurrency (Chart.js).
 
-**Deploy (GitHub Actions):** copy [`contrib/deploy-pages.yml`](contrib/deploy-pages.yml) to `.github/workflows/deploy-pages.yml`, commit, and push (some automation tokens cannot create workflow files; use your laptop or GitHub’s web editor if needed). On each push to `main`, the workflow publishes the `docs/` folder.
-
-**One-time (repo owner):** **Settings** → **Pages** → **Build and deployment** → set **Source** to **GitHub Actions**, then save. Approve the **github-pages** environment the first time Actions prompts. After a green **Deploy GitHub Pages** run, the link above works.
-
 ## Setup
 
 1. **Install cuVS 26.04 + dependencies** (Python 3.11, conda/micromamba):
