@@ -12,13 +12,18 @@ The notebook builds the index in Python, then runs **all** cuVS searches (every 
 | `index_size_params.yaml` | Algorithm parameters (CAGRA + IVF-PQ + FAISS) |
 | `cuvs_search_client.cpp` | Master C++ client (CAGRA / IVF-PQ via `--algo`) |
 | `build_cuvs_search_client.sh` | Compiles `cuvs_search_client` from `.cpp` |
-| `docs/results-chart.svg` | Same QPS chart as static SVG (shown under Results) |
-| `docs/cagra_vs_hnsw_concurrency_qps_branded.html` | Interactive Chart.js version |
-| `docs/index.html` | Optional GitHub Pages root redirect |
+| `docs/cagra_vs_hnsw_concurrency_qps_branded.html` | Interactive QPS chart (Chart.js; served on Pages) |
+| `docs/index.html` | Pages site root (redirects to chart) |
+| `docs/results-chart.svg` | Static SVG copy of the same chart (optional) |
+| `.github/workflows/deploy-pages.yml` | Deploys `docs/` to GitHub Pages on every push to `main` |
 
 ## Results
 
-![CAGRA vs FAISS HNSW — effective QPS vs concurrency](docs/results-chart.svg)
+**[Interactive chart (GitHub Pages)](https://manassingh12345.github.io/cuvs-search-bench/cagra_vs_hnsw_concurrency_qps_branded.html)** — CAGRA vs FAISS HNSW effective QPS vs concurrency (Chart.js).
+
+Published by [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml) on each push to `main`.
+
+**One-time (repo owner):** **Settings** → **Pages** → **Build and deployment** → set **Source** to **GitHub Actions**, then save. After the next workflow run, the link above works.
 
 ## Setup
 
