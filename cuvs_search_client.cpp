@@ -13,6 +13,7 @@
 //   --batch-size <int>        queries per cuvs*Search call
 //   --iters <int>             timed iterations (averaged)
 //   --itopk-size <int>        CAGRA itopk
+//   --search-width <int>      CAGRA search_width (default 1; try 2 for recall)
 //   --persistent {0,1}        CAGRA persistent kernel (CAGRA only; ignored for ivf_pq)
 //   --n-probes <int>          IVF-PQ n_probes
 
@@ -60,6 +61,7 @@ int main(int argc, char** argv) {
   std::string algo = "cagra", index_file, queries_file, out_neighbors, out_meta;
   int64_t Q = 0, D = 0;
   int k = 10, c = 1, batch_size = 1, iters = 5, persistent = 1, itopk = 64, n_probes = 32;
+  int search_width = 1;
   for (int i = 1; i < argc; i++) {
     std::string a = argv[i];
     auto next = [&]() { return std::string(argv[++i]); };
@@ -70,6 +72,7 @@ int main(int argc, char** argv) {
     else if (a == "--out-meta") out_meta = next();
     else if (a == "--shape") std::sscanf(argv[++i], "%ld,%ld", &Q, &D);
     else if (a == "--itopk-size") itopk = std::atoi(argv[++i]);
+    else if (a == "--search-width") search_width = std::atoi(argv[++i]);
     else if (a == "--k") k = std::atoi(argv[++i]);
     else if (a == "--c") c = std::atoi(argv[++i]);
     else if (a == "--batch-size") batch_size = std::atoi(argv[++i]);
@@ -114,6 +117,7 @@ int main(int argc, char** argv) {
     CUVS_CHECK(cuvsCagraDeserialize(res, index_file.c_str(), cagra_index));
     CUVS_CHECK(cuvsCagraSearchParamsCreate(&cagra_sp));
     cagra_sp->itopk_size = itopk;
+    cagra_sp->search_width = static_cast<size_t>(search_width < 1 ? 1 : search_width);
     cagra_sp->algo = SINGLE_CTA;
     cagra_sp->persistent = persistent != 0;
     cagra_sp->persistent_device_usage = 0.95f;

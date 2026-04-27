@@ -2,7 +2,7 @@
 
 End-to-end benchmark for cuVS GPU vector search with realistic concurrent online-serving throughput. Supports **CAGRA** (graph-based, with persistent kernel) and **IVF-PQ** (inverted-list + product quantization).
 
-The notebook runs the safe Python path for `c=1` and shells out to a small C++ master client (`cuvs_search_client`) for `c>1` to fire many concurrent in-flight searches into a single CUDA context — the same pattern `cuvs-bench` uses, achieving ~50× higher QPS than cuVS Python alone at `bs=1` online-serving workloads.
+The notebook builds the index in Python, then runs **all** cuVS searches (every `c`, including `1`) through a small C++ master client (`cuvs_search_client`) so many concurrent in-flight searches share one CUDA context — the same pattern `cuvs-bench` uses for high QPS at `bs=1` online-serving workloads.
 
 ## Files
 
@@ -12,6 +12,15 @@ The notebook runs the safe Python path for `c=1` and shells out to a small C++ m
 | `index_size_params.yaml` | Algorithm parameters (CAGRA + IVF-PQ + FAISS) |
 | `cuvs_search_client.cpp` | Master C++ client (CAGRA / IVF-PQ via `--algo`) |
 | `build_cuvs_search_client.sh` | Compiles `cuvs_search_client` from `.cpp` |
+| `docs/cagra_vs_hnsw_concurrency_qps_branded.html` | Standalone chart: CAGRA vs FAISS QPS vs concurrency (open locally in a browser) |
+
+## Diagram (HTML)
+
+Open [`docs/cagra_vs_hnsw_concurrency_qps_branded.html`](docs/cagra_vs_hnsw_concurrency_qps_branded.html) in a browser (clone the repo or use **Raw** → save as file → open). GitHub’s file viewer does not execute inline HTML; for in-repo rendering, enable [**GitHub Pages**](https://docs.github.com/en/pages) with the `/docs` folder and open the published URL to the same path.
+
+To use your own branded export from another machine, copy it over this path:
+
+`scp /Users/manass/Downloads/cagra_vs_hnsw_concurrency_qps_branded.html user@host:/path/to/cuvs-search-bench/docs/cagra_vs_hnsw_concurrency_qps_branded.html`
 
 ## Setup
 
@@ -47,9 +56,10 @@ INDEX_TYPE = "cagra"               # or "ivf_pq"
 SIZES = [1_000_000]                # dataset sizes to sweep
 BENCHMARK_DIMS = [1024]            # truncate to these dims
 SEARCH_CONCURRENCY = [1, 32, 64]   # in-flight searches (c)
-SEARCH_BATCH_SIZES = [1]           # queries per cagra.search call (bs)
-USE_CUVS_PROCESS_CONCURRENCY = True  # use C++ client for c>1
+SEARCH_BATCH_SIZES = [1]           # queries per client search call (bs)
 ```
+
+All cuVS search runs (including `c=1`) use the **`cuvs_search_client`** binary; the notebook only builds the index in Python.
 
 Edit `index_size_params.yaml` for algorithm tuning:
 

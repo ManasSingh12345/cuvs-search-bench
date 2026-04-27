@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CAGRA vs FAISS HNSW — search concurrency vs effective QPS</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --cagra: #76b900;
+      --faiss: #0071c5;
+      --border: #30363d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 2rem clamp(1rem, 4vw, 3rem);
+    }
+    .wrap { max-width: 960px; margin: 0 auto; }
+    h1 {
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.35rem;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.25rem 0.5rem;
+    }
+    canvas { max-height: 420px; }
+    footer {
+      margin-top: 1.25rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>CAGRA vs FAISS HNSW — effective QPS vs search concurrency</h1>
+    <p class="subtitle">
+      1M vectors × 1024 dims, k=10, batch_size=1. CAGRA: cuVS <code>nn_descent</code> build + <code>cuvs_search_client</code>.
+      FAISS: HNSWFlat, concurrent Python threads (OMP=1 per search). Data source: <code>results_cagra_faiss_hnsw.csv</code> in repo root.
+    </p>
+    <div class="panel">
+      <canvas id="qps" height="360"></canvas>
+    </div>
+    <footer>
+      Replace this file with your own export if needed — keep the same path so README / links stay valid.
+    </footer>
+  </div>
+  <script>
+    const c = [1, 2, 4, 8, 16, 32, 64, 128];
+    const cagraQps = [1781.8007, 3660.8179, 7483.3495, 14709.6247, 25876.6357, 32228.6429, 30793.2969, 26800.8137];
+    const faissQps = [1520.9117, 2721.5575, 5046.5777, 7769.8906, 10004.9909, 8460.9797, 7889.6242, 7611.9435];
+    Chart.defaults.color = "#8b949e";
+    Chart.defaults.borderColor = "#30363d";
+    new Chart(document.getElementById("qps"), {
+      type: "line",
+      data: {
+        labels: c.map((x) => "c = " + x),
+        datasets: [
+          {
+            label: "CAGRA (effective QPS)",
+            data: cagraQps,
+            borderColor: "#76b900",
+            backgroundColor: "rgba(118, 185, 0, 0.12)",
+            fill: true,
+            tension: 0.2,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+          },
+          {
+            label: "FAISS HNSW (effective QPS)",
+            data: faissQps,
+            borderColor: "#0071c5",
+            backgroundColor: "rgba(0, 113, 197, 0.1)",
+            fill: true,
+            tension: 0.2,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: { color: "#e6edf3", font: { size: 13 } },
+          },
+          tooltip: {
+            callbacks: {
+              label: (ctx) =>
+                ctx.dataset.label + ": " + Math.round(ctx.parsed.y).toLocaleString() + " QPS",
+            },
+          },
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: "Search concurrency (in-flight searches)",
+              color: "#8b949e",
+            },
+            ticks: { color: "#8b949e" },
+            grid: { color: "#21262d" },
+          },
+          y: {
+            title: {
+              display: true,
+              text: "Effective QPS (nq / search_wall_s)",
+              color: "#8b949e",
+            },
+            ticks: {
+              color: "#8b949e",
+              callback: (v) => (v >= 1e3 ? (v / 1e3).toFixed(0) + "k" : v),
+            },
+            grid: { color: "#21262d" },
+          },
+        },
+      },
+    });
+  </script>
+</body>
+</html>
