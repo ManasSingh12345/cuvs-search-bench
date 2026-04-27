@@ -74,13 +74,6 @@ ivf_pq:
   n_probes: 32
 ```
 
-## Why this is fast
-
-cuVS Python at `bs=1` is limited to **~600 QPS per process** because each call is host-blocking — only one query in flight at a time. The C++ client launches `c` concurrent threads (default 32-64), each dropping 1-query searches into a single persistent CAGRA kernel queue. The kernel never restarts between queries, so the GPU is always doing useful work. Result: **~30K QPS at 90% recall on an L4** — matching `cuvs-bench`.
-
-This works around a known cuVS Python thread-safety bug (`device_ndarray.empty` segfaults with per-thread `Resources(stream=...)`); the C++ path uses cuVS's C API directly which doesn't have the issue.
-
 ## Outputs
 
 - `index_size_analysis_results.csv` — one row per (size, dim, c, bs) configuration
-- 3-panel plot: build time, search QPS, search latency
