@@ -6,7 +6,7 @@
 //   --index-file <path>       saved index (Python: cagra.save / ivf_pq.save)
 //   --queries-file <path>     raw float32 binary, shape (Q, D)
 //   --out-neighbors <path>    output: raw binary; uint32 for cagra, int64 for ivf_pq
-//   --out-meta <path>         output: JSON with {"search_wall_s": <avg-per-iter>}
+//   --out-meta <path>         output: JSON search_wall_s (avg wall per iter), batch_latency_p95_s
 //   --shape Q,D               int64 query rows and dims
 //   --k <int>                 neighbors per query
 //   --c <int>                 max concurrent in-flight searches
@@ -24,13 +24,17 @@
 #include <cuda_runtime.h>
 #include <dlpack/dlpack.h>
 
+#include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <future>
+#include <limits>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -55,6 +59,19 @@ static DLManagedTensor make_dl(void* ptr, int64_t* shape, int ndim, DLDataType d
   t.dl_tensor.dtype = dtype;
   t.dl_tensor.shape = shape;
   return t;
+}
+
+/** Linear interpolation percentile (numpy.percentile(..., p, method="linear")). */
+static double percentile_linear(std::vector<double> v, double p) {
+  if (v.empty()) return std::numeric_limits<double>::quiet_NaN();
+  std::sort(v.begin(), v.end());
+  const size_t n = v.size();
+  if (n == 1) return v[0];
+  const double pos = (p / 100.0) * static_cast<double>(n - 1);
+  const size_t lo = static_cast<size_t>(std::floor(pos));
+  const size_t hi = static_cast<size_t>(std::ceil(pos));
+  if (lo >= hi) return v[lo];
+  return v[lo] + (pos - static_cast<double>(lo)) * (v[hi] - v[lo]);
 }
 
 int main(int argc, char** argv) {
@@ -153,6 +170,9 @@ int main(int argc, char** argv) {
 
   const int64_t num_jobs = (Q + batch_size - 1) / batch_size;
   std::vector<std::future<void>> futures(c);
+  std::vector<double> batch_latencies;
+  batch_latencies.reserve(static_cast<size_t>(num_jobs * std::max(1, iters)));
+  std::mutex lat_mu;
   auto t0 = std::chrono::steady_clock::now();
   for (int it = 0; it < iters; it++) {
     for (int64_t j = 0; j < num_jobs + c; j++) {
@@ -161,13 +181,21 @@ int main(int argc, char** argv) {
       if (j < num_jobs) {
         const int64_t offset = j * batch_size;
         const int64_t bs = std::min<int64_t>(batch_size, Q - offset);
-        futures[slot] = std::async(std::launch::async, [&, offset, bs]() { search_slice(offset, bs); });
+        futures[slot] = std::async(std::launch::async, [&, offset, bs]() {
+          const auto t_batch0 = std::chrono::steady_clock::now();
+          search_slice(offset, bs);
+          const auto t_batch1 = std::chrono::steady_clock::now();
+          const double dt = std::chrono::duration<double>(t_batch1 - t_batch0).count();
+          std::lock_guard<std::mutex> lock(lat_mu);
+          batch_latencies.push_back(dt);
+        });
       }
     }
     if (!is_cagra || !persistent) CUDA_CHECK(cudaDeviceSynchronize());
   }
   auto t1 = std::chrono::steady_clock::now();
   double wall = std::chrono::duration<double>(t1 - t0).count() / std::max(1, iters);
+  const double p95_batch_s = percentile_linear(batch_latencies, 95.0);
 
   // Copy neighbors back.
   std::vector<char> n_host(static_cast<size_t>(Q) * k * neigh_elt);
@@ -178,7 +206,7 @@ int main(int argc, char** argv) {
   }
   {
     std::ofstream mf(out_meta);
-    mf << "{\"search_wall_s\": " << wall << "}";
+    mf << "{\"search_wall_s\": " << wall << ", \"batch_latency_p95_s\": " << p95_batch_s << "}";
   }
   std::fflush(nullptr);
   std::quick_exit(0);
